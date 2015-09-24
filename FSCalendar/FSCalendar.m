@@ -225,7 +225,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     _supressEvent = YES;
     
     if (_needsAdjustingViewFrame) {
-    
+        
         _contentView.frame = self.bounds;
         CGFloat padding = kFSCalendarDefaultWeekHeight*0.1;
         _header.frame = CGRectMake(0, 0, self.fs_width, _headerHeight == -1 ? kFSCalendarDefaultHeaderHeight : _headerHeight);
@@ -529,7 +529,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
         }
     }
     BOOL shouldTriggerPageChange = ((pannedOffset < 0 && targetOffset > currentOffset) ||
-                                     (pannedOffset > 0 && targetOffset < currentOffset)) && _minimumDate;
+                                    (pannedOffset > 0 && targetOffset < currentOffset)) && _minimumDate;
     if (shouldTriggerPageChange) {
         [self willChangeValueForKey:@"currentPage"];
         switch (_scope) {
@@ -719,14 +719,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     return self.selectedDates.lastObject;
 }
 
-- (void)deselectDate:(NSDate *)date
-{
-    FSCalendarCell *cell = (FSCalendarCell *)[_collectionView cellForItemAtIndexPath:[self indexPathForDate:date]];
-    _daysContainer.clipsToBounds = NO;
-    [cell performDeselecting];
-    [_selectedDates removeObject:cell.date];
-    [self didDeselectDate:cell.date];
-}
+
 
 - (NSArray *)selectedDates
 {
@@ -743,14 +736,14 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     [_weekdays setValue:[UIFont systemFontOfSize:_appearance.weekdayTextSize] forKey:@"font"];
     CGFloat width = self.fs_width/_weekdays.count;
     CGFloat height = kFSCalendarDefaultWeekHeight;
-//    [_calendar.shortStandaloneWeekdaySymbols enumerateObjectsUsingBlock:^(NSString *symbol, NSUInteger index, BOOL *stop) {
-//        if (index >= _weekdays.count) {
-//            *stop = YES;
-//            return;
-//        }
-//        UILabel *weekdayLabel = _weekdays[index];
-//        weekdayLabel.text = symbol;
-//    }];
+    //    [_calendar.shortStandaloneWeekdaySymbols enumerateObjectsUsingBlock:^(NSString *symbol, NSUInteger index, BOOL *stop) {
+    //        if (index >= _weekdays.count) {
+    //            *stop = YES;
+    //            return;
+    //        }
+    //        UILabel *weekdayLabel = _weekdays[index];
+    //        weekdayLabel.text = symbol;
+    //    }];
     [_weekdays enumerateObjectsUsingBlock:^(UILabel *weekdayLabel, NSUInteger idx, BOOL *stop) {
         NSUInteger absoluteIndex = ((idx-(_firstWeekday-1))+7)%7;
         weekdayLabel.frame = CGRectMake(absoluteIndex * width,
@@ -929,6 +922,16 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     [self selectDate:date scrollToDate:scrollToDate forPlaceholder:NO];
 }
 
+
+
+- (void)deselectDate:(NSDate *)date
+{
+    [_collectionView deselectItemAtIndexPath:[self indexPathForDate:date] animated:YES];
+    [self collectionView:_collectionView didDeselectItemAtIndexPath:[self indexPathForDate:date]];
+}
+
+
+
 - (void)selectDate:(NSDate *)date scrollToDate:(BOOL)scrollToDate forPlaceholder:(BOOL)forPlaceholder
 {
     if (![self isDateInRange:date]) {
@@ -966,7 +969,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
             [_selectedDates removeObject:cell.date];
         }
         [_collectionView selectItemAtIndexPath:selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-        
+        [self collectionView:_collectionView didSelectItemAtIndexPath:selectedIndexPath];
     }
     
     if (scrollToDate) {
@@ -1180,7 +1183,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
 - (BOOL)shouldDeselectDate:(NSDate *)date
 {
     if (_delegate && [_delegate respondsToSelector:@selector(calendar:shouldDeselectDate:)]) {
-       return [_delegate calendar:self shouldDeselectDate:date];
+        return [_delegate calendar:self shouldDeselectDate:date];
     }
     return YES;
 }
