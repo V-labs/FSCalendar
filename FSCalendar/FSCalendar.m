@@ -719,6 +719,15 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     return self.selectedDates.lastObject;
 }
 
+- (void)deselectDate:(NSDate *)date
+{
+    FSCalendarCell *cell = (FSCalendarCell *)[_collectionView cellForItemAtIndexPath:[self indexPathForDate:date]];
+    _daysContainer.clipsToBounds = NO;
+    [cell performDeselecting];
+    [_selectedDates removeObject:cell.date];
+    [self didDeselectDate:cell.date];
+}
+
 - (NSArray *)selectedDates
 {
     return _selectedDates;
