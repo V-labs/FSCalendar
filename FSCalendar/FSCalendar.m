@@ -442,7 +442,7 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
     if (cell.dateIsPlaceholder) {
         if ([self isDateInRange:cell.date]) {
             [self selectDate:cell.date scrollToDate:YES forPlaceholder:YES];
-        } else if (![cell.date fs_isEqualToDateForMonth:_currentPage]) {
+        } else if (![cell.date fs_isEqualToDateForMonth:_currentPage] && [cell.date compare:_maximumDate] != NSOrderedDescending && [cell.date compare:_minimumDate] != NSOrderedAscending) {
             [self scrollToPageForDate:cell.date animated:YES];
         }
         return NO;
@@ -926,8 +926,10 @@ static BOOL FSCalendarInInterfaceBuilder = NO;
 
 - (void)deselectDate:(NSDate *)date
 {
+    
     [_collectionView deselectItemAtIndexPath:[self indexPathForDate:date] animated:YES];
     [self collectionView:_collectionView didDeselectItemAtIndexPath:[self indexPathForDate:date]];
+    
 }
 
 
